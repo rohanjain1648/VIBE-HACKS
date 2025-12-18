@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Wifi, WifiOff, Download, Upload, Sync, Database, Clock, CheckCircle, AlertCircle, Smartphone } from 'lucide-react';
+import { Wifi, WifiOff, Download, Upload, RefreshCw, Database, Clock, CheckCircle, AlertCircle, Smartphone } from 'lucide-react';
 
 interface OfflineData {
   services: any[];
@@ -135,12 +135,12 @@ export const OfflineFirstManager: React.FC = () => {
 
   const downloadForOffline = async (type: string) => {
     setSyncStatus(prev => ({ ...prev, pendingDownloads: prev.pendingDownloads + 1 }));
-    
+
     // Simulate download
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setSyncStatus(prev => ({ 
-      ...prev, 
+
+    setSyncStatus(prev => ({
+      ...prev,
       pendingDownloads: prev.pendingDownloads - 1,
       dataSize: prev.dataSize + 2.5
     }));
@@ -171,7 +171,7 @@ export const OfflineFirstManager: React.FC = () => {
     switch (type) {
       case 'service': return <Database className="text-blue-600" size={16} />;
       case 'gig': return <Smartphone className="text-green-600" size={16} />;
-      case 'message': return <Sync className="text-purple-600" size={16} />;
+      case 'message': return <RefreshCw className="text-purple-600" size={16} />;
       case 'alert': return <AlertCircle className="text-red-600" size={16} />;
       case 'profile': return <CheckCircle className="text-blue-600" size={16} />;
       default: return <Database className="text-gray-600" size={16} />;
@@ -181,11 +181,10 @@ export const OfflineFirstManager: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto p-6">
       {/* Header */}
-      <div className={`rounded-lg p-6 mb-6 ${
-        syncStatus.isOnline 
-          ? 'bg-gradient-to-r from-green-500 to-blue-500' 
-          : 'bg-gradient-to-r from-orange-500 to-red-500'
-      } text-white`}>
+      <div className={`rounded-lg p-6 mb-6 ${syncStatus.isOnline
+        ? 'bg-gradient-to-r from-green-500 to-blue-500'
+        : 'bg-gradient-to-r from-orange-500 to-red-500'
+        } text-white`}>
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold mb-2 flex items-center">
@@ -207,18 +206,17 @@ export const OfflineFirstManager: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <div className="bg-white rounded-lg shadow-lg p-6">
           <h2 className="text-xl font-semibold mb-4 flex items-center">
-            <Sync className="text-blue-600 mr-2" size={24} />
+            <RefreshCw className="text-blue-600 mr-2" size={24} />
             Sync Status
           </h2>
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-gray-700">Connection Status</span>
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                syncStatus.isOnline 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-red-100 text-red-800'
-              }`}>
+              <span className={`px-3 py-1 rounded-full text-sm font-medium ${syncStatus.isOnline
+                ? 'bg-green-100 text-green-800'
+                : 'bg-red-100 text-red-800'
+                }`}>
                 {syncStatus.isOnline ? 'Online' : 'Offline'}
               </span>
             </div>
@@ -233,18 +231,16 @@ export const OfflineFirstManager: React.FC = () => {
 
             <div className="flex items-center justify-between">
               <span className="text-gray-700">Pending Uploads</span>
-              <span className={`px-2 py-1 rounded-full text-sm ${
-                syncStatus.pendingUploads > 0 ? 'bg-orange-100 text-orange-800' : 'bg-green-100 text-green-800'
-              }`}>
+              <span className={`px-2 py-1 rounded-full text-sm ${syncStatus.pendingUploads > 0 ? 'bg-orange-100 text-orange-800' : 'bg-green-100 text-green-800'
+                }`}>
                 {syncStatus.pendingUploads}
               </span>
             </div>
 
             <div className="flex items-center justify-between">
               <span className="text-gray-700">Pending Downloads</span>
-              <span className={`px-2 py-1 rounded-full text-sm ${
-                syncStatus.pendingDownloads > 0 ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
-              }`}>
+              <span className={`px-2 py-1 rounded-full text-sm ${syncStatus.pendingDownloads > 0 ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                }`}>
                 {syncStatus.pendingDownloads}
               </span>
             </div>
@@ -252,11 +248,10 @@ export const OfflineFirstManager: React.FC = () => {
             <button
               onClick={startSync}
               disabled={!syncStatus.isOnline || syncStatus.syncInProgress}
-              className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${
-                syncStatus.isOnline && !syncStatus.syncInProgress
-                  ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
+              className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${syncStatus.isOnline && !syncStatus.syncInProgress
+                ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
             >
               {syncStatus.syncInProgress ? (
                 <span className="flex items-center justify-center">
@@ -284,14 +279,12 @@ export const OfflineFirstManager: React.FC = () => {
               </div>
               <button
                 onClick={() => setAutoSync(!autoSync)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  autoSync ? 'bg-blue-600' : 'bg-gray-200'
-                }`}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${autoSync ? 'bg-blue-600' : 'bg-gray-200'
+                  }`}
               >
                 <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    autoSync ? 'translate-x-6' : 'translate-x-1'
-                  }`}
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${autoSync ? 'translate-x-6' : 'translate-x-1'
+                    }`}
                 />
               </button>
             </div>
@@ -303,14 +296,12 @@ export const OfflineFirstManager: React.FC = () => {
               </div>
               <button
                 onClick={() => setLowDataMode(!lowDataMode)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  lowDataMode ? 'bg-orange-600' : 'bg-gray-200'
-                }`}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${lowDataMode ? 'bg-orange-600' : 'bg-gray-200'
+                  }`}
               >
                 <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    lowDataMode ? 'translate-x-6' : 'translate-x-1'
-                  }`}
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${lowDataMode ? 'translate-x-6' : 'translate-x-1'
+                    }`}
                 />
               </button>
             </div>
@@ -322,14 +313,12 @@ export const OfflineFirstManager: React.FC = () => {
               </div>
               <button
                 onClick={() => setOfflineMode(!offlineMode)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  offlineMode ? 'bg-red-600' : 'bg-gray-200'
-                }`}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${offlineMode ? 'bg-red-600' : 'bg-gray-200'
+                  }`}
               >
                 <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    offlineMode ? 'translate-x-6' : 'translate-x-1'
-                  }`}
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${offlineMode ? 'translate-x-6' : 'translate-x-1'
+                    }`}
                 />
               </button>
             </div>
@@ -350,11 +339,10 @@ export const OfflineFirstManager: React.FC = () => {
               key={type}
               onClick={() => downloadForOffline(type)}
               disabled={!syncStatus.isOnline}
-              className={`p-4 rounded-lg border-2 border-dashed transition-colors ${
-                syncStatus.isOnline
-                  ? 'border-blue-300 hover:border-blue-500 hover:bg-blue-50'
-                  : 'border-gray-200 cursor-not-allowed'
-              }`}
+              className={`p-4 rounded-lg border-2 border-dashed transition-colors ${syncStatus.isOnline
+                ? 'border-blue-300 hover:border-blue-500 hover:bg-blue-50'
+                : 'border-gray-200 cursor-not-allowed'
+                }`}
             >
               <div className="text-center">
                 {getTypeIcon(type)}
