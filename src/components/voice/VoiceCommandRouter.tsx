@@ -310,7 +310,7 @@ const VoiceCommandHelp: React.FC<VoiceCommandHelpProps> = ({ onClose, onStartWor
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6">
+                <div className="bg-gradient-to-r from-green-500 to-blue-500 text-white p-6">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <HelpCircle className="w-8 h-8" />
@@ -323,7 +323,7 @@ const VoiceCommandHelp: React.FC<VoiceCommandHelpProps> = ({ onClose, onStartWor
                             <X className="w-6 h-6" />
                         </button>
                     </div>
-                    <p className="mt-2 text-purple-100">
+                    <p className="mt-2 text-green-100">
                         Use your voice to navigate and control the app
                     </p>
                 </div>
@@ -364,7 +364,7 @@ const VoiceCommandHelp: React.FC<VoiceCommandHelpProps> = ({ onClose, onStartWor
                                                     key={exIndex}
                                                     className="flex items-center gap-2 text-sm text-gray-600"
                                                 >
-                                                    <span className="text-purple-500">💬</span>
+                                                    <span className="text-green-500">💬</span>
                                                     <code className="bg-white px-2 py-1 rounded border border-gray-200">
                                                         "{example}"
                                                     </code>
@@ -392,7 +392,7 @@ const VoiceCommandHelp: React.FC<VoiceCommandHelpProps> = ({ onClose, onStartWor
                                     onStartWorkflow('postJob');
                                     onClose();
                                 }}
-                                className="w-full text-left bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                                className="w-full text-left bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4 hover:shadow-md transition-shadow"
                             >
                                 <p className="font-medium text-gray-900 mb-1">Post a Job</p>
                                 <p className="text-sm text-gray-600">
@@ -445,7 +445,7 @@ const VoiceCommandHelp: React.FC<VoiceCommandHelpProps> = ({ onClose, onStartWor
                 <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
                     <button
                         onClick={onClose}
-                        className="w-full px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-medium hover:from-purple-600 hover:to-pink-600 transition-colors"
+                        className="w-full px-4 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg font-medium hover:from-green-600 hover:to-blue-600 transition-colors"
                     >
                         Got it, let's go!
                     </button>

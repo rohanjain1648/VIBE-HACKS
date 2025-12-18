@@ -1,8 +1,8 @@
 import React, { useState, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ArrowLeft, 
-  Loader2, 
+import {
+  ArrowLeft,
+  Loader2,
   AlertCircle,
   Sparkles,
   Zap,
@@ -39,15 +39,15 @@ const COMPONENT_MAP = {
 const LoadingSpinner: React.FC<{ message?: string }> = ({ message = 'Loading advanced feature...' }) => (
   <div className="flex items-center justify-center min-h-[400px]">
     <div className="text-center">
-      <Loader2 className="w-8 h-8 animate-spin text-indigo-600 mx-auto mb-4" />
+      <Loader2 className="w-8 h-8 animate-spin text-green-600 mx-auto mb-4" />
       <p className="text-gray-600">{message}</p>
     </div>
   </div>
 );
 
-const ErrorBoundary: React.FC<{ children: React.ReactNode; featureName: string }> = ({ 
-  children, 
-  featureName 
+const ErrorBoundary: React.FC<{ children: React.ReactNode; featureName: string }> = ({
+  children,
+  featureName
 }) => {
   const [hasError, setHasError] = useState(false);
 
@@ -70,7 +70,7 @@ const ErrorBoundary: React.FC<{ children: React.ReactNode; featureName: string }
           </p>
           <button
             onClick={() => setHasError(false)}
-            className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors"
+            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
           >
             Try Again
           </button>
@@ -102,7 +102,7 @@ export const AdvancedFeaturesDashboard: React.FC<AdvancedFeaturesDashboardProps>
     }
 
     const Component = COMPONENT_MAP[activeComponent as keyof typeof COMPONENT_MAP];
-    
+
     return (
       <ErrorBoundary featureName={activeComponent}>
         <Suspense fallback={<LoadingSpinner message={`Loading ${activeComponent}...`} />}>
@@ -113,7 +113,7 @@ export const AdvancedFeaturesDashboard: React.FC<AdvancedFeaturesDashboardProps>
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -129,7 +129,7 @@ export const AdvancedFeaturesDashboard: React.FC<AdvancedFeaturesDashboardProps>
                 </button>
               )}
               <div className="flex items-center space-x-3">
-                <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg">
+                <div className="p-2 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg">
                   <Sparkles className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -137,7 +137,7 @@ export const AdvancedFeaturesDashboard: React.FC<AdvancedFeaturesDashboardProps>
                     {activeFeature ? 'Advanced Feature' : 'Advanced Features Hub'}
                   </h1>
                   <p className="text-gray-600">
-                    {activeFeature 
+                    {activeFeature
                       ? 'Experience next-generation rural technology'
                       : 'Discover cutting-edge AI and IoT solutions for rural communities'
                     }
@@ -145,14 +145,14 @@ export const AdvancedFeaturesDashboard: React.FC<AdvancedFeaturesDashboardProps>
                 </div>
               </div>
             </div>
-            
+
             {!activeFeature && (
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2 px-3 py-2 bg-green-100 text-green-700 rounded-lg">
                   <Star className="w-4 h-4" />
                   <span className="text-sm font-medium">8 New Features</span>
                 </div>
-                <div className="flex items-center space-x-2 px-3 py-2 bg-purple-100 text-purple-700 rounded-lg">
+                <div className="flex items-center space-x-2 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg">
                   <Zap className="w-4 h-4" />
                   <span className="text-sm font-medium">AI Powered</span>
                 </div>
@@ -180,7 +180,7 @@ export const AdvancedFeaturesDashboard: React.FC<AdvancedFeaturesDashboardProps>
                   transition={{ delay: 0.2 }}
                   className="mb-6"
                 >
-                  <div className="inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full text-indigo-700 mb-4">
+                  <div className="inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-100 to-blue-100 rounded-full text-green-700 mb-4">
                     <TrendingUp className="w-4 h-4" />
                     <span className="text-sm font-medium">Next-Generation Technology</span>
                   </div>
@@ -188,8 +188,8 @@ export const AdvancedFeaturesDashboard: React.FC<AdvancedFeaturesDashboardProps>
                     Advanced Features for Rural Australia
                   </h2>
                   <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                    Experience the future of rural technology with AI-powered insights, 
-                    IoT monitoring, predictive analytics, and inclusive accessibility features 
+                    Experience the future of rural technology with AI-powered insights,
+                    IoT monitoring, predictive analytics, and inclusive accessibility features
                     designed specifically for rural communities.
                   </p>
                 </motion.div>
@@ -202,10 +202,10 @@ export const AdvancedFeaturesDashboard: React.FC<AdvancedFeaturesDashboardProps>
                   className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-4xl mx-auto"
                 >
                   {[
-                    { label: 'AI Models', value: '12+', color: 'indigo' },
-                    { label: 'Languages', value: '8', color: 'green' },
-                    { label: 'IoT Sensors', value: '50+', color: 'blue' },
-                    { label: 'Accuracy', value: '94%', color: 'purple' }
+                    { label: 'AI Models', value: '12+', color: 'green' },
+                    { label: 'Languages', value: '8', color: 'blue' },
+                    { label: 'IoT Sensors', value: '50+', color: 'emerald' },
+                    { label: 'Accuracy', value: '94%', color: 'teal' }
                   ].map((stat, index) => (
                     <div key={index} className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
                       <p className={`text-3xl font-bold text-${stat.color}-600 mb-2`}>{stat.value}</p>
@@ -223,7 +223,7 @@ export const AdvancedFeaturesDashboard: React.FC<AdvancedFeaturesDashboardProps>
               >
                 <AdvancedFeaturesNav
                   onFeatureSelect={handleFeatureSelect}
-                  activeFeature={activeFeature || undefined}
+                  activeFeature={activeFeature}
                 />
               </motion.div>
 
@@ -261,7 +261,7 @@ export const AdvancedFeaturesDashboard: React.FC<AdvancedFeaturesDashboardProps>
                       <ul className="space-y-2">
                         {benefit.benefits.map((item, i) => (
                           <li key={i} className="flex items-center justify-center space-x-2">
-                            <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                             <span className="text-sm text-gray-700">{item}</span>
                           </li>
                         ))}

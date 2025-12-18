@@ -24,7 +24,7 @@ const WellbeingDashboard: React.FC = () => {
       setLoading(true);
       const data = await wellbeingService.getDashboard(30);
       setDashboard(data);
-      
+
       // Show crisis resources if user is at high risk
       if (data.riskAssessment.currentRisk === 'high' || data.riskAssessment.currentRisk === 'critical') {
         setShowCrisisResources(true);
@@ -84,7 +84,7 @@ const WellbeingDashboard: React.FC = () => {
       critical: 'text-red-600 bg-red-100',
       unknown: 'text-gray-600 bg-gray-100'
     };
-    
+
     return (
       <span className={`px-3 py-1 rounded-full text-sm font-medium ${colors[risk as keyof typeof colors] || colors.unknown}`}>
         {risk.charAt(0).toUpperCase() + risk.slice(1)} Risk
@@ -172,11 +172,10 @@ const WellbeingDashboard: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === tab.id
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                  }`}
               >
                 <span className="mr-2">{tab.icon}</span>
                 {tab.name}
@@ -230,7 +229,7 @@ const WellbeingDashboard: React.FC = () => {
               </div>
               <div className="bg-white rounded-lg shadow p-4">
                 <h3 className="text-sm font-medium text-gray-600">Available Resources</h3>
-                <p className="text-2xl font-bold text-purple-600">{dashboard.recommendedResources.length}</p>
+                <p className="text-2xl font-bold text-blue-600">{dashboard.recommendedResources.length}</p>
               </div>
               <div className="bg-white rounded-lg shadow p-4">
                 <h3 className="text-sm font-medium text-gray-600">Days Tracked</h3>

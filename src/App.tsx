@@ -165,7 +165,7 @@ const App: React.FC = () => {
       icon: '🚀',
       title: 'Advanced Features',
       description: 'AI Assistant, IoT Monitoring, Predictive Analytics & More',
-      color: 'from-indigo-500 to-purple-600',
+      color: 'from-green-500 to-blue-600',
       view: 'advanced' as const,
       isNew: true
     },
@@ -206,7 +206,7 @@ const App: React.FC = () => {
       icon: '💚',
       title: 'Wellbeing',
       description: 'Mental health support & community care',
-      color: 'from-purple-500 to-pink-600',
+      color: 'from-emerald-500 to-teal-600',
       view: 'wellbeing' as const
     },
     {
@@ -315,7 +315,7 @@ const App: React.FC = () => {
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="text-xl font-bold text-gray-900">{feature.title}</h3>
                     {feature.isNew && (
-                      <span className="px-2 py-1 text-xs bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full font-medium">
+                      <span className="px-2 py-1 text-xs bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-full font-medium">
                         NEW
                       </span>
                     )}
@@ -344,7 +344,7 @@ const App: React.FC = () => {
                 <div className="text-sm text-gray-600">Languages Supported</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600 mb-1">AI</div>
+                <div className="text-3xl font-bold text-blue-600 mb-1">AI</div>
                 <div className="text-sm text-gray-600">Powered Insights</div>
               </div>
               <div className="text-center">

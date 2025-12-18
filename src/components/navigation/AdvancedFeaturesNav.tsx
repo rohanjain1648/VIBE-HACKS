@@ -113,11 +113,11 @@ const ADVANCED_FEATURES: AdvancedFeature[] = [
 ];
 
 const CATEGORIES = {
-  ai: { name: 'AI & Intelligence', icon: <Brain className="w-4 h-4" />, color: 'purple' },
+  ai: { name: 'AI & Intelligence', icon: <Brain className="w-4 h-4" />, color: 'green' },
   iot: { name: 'IoT & Monitoring', icon: <Activity className="w-4 h-4" />, color: 'blue' },
-  analytics: { name: 'Analytics & Insights', icon: <BarChart3 className="w-4 h-4" />, color: 'green' },
-  accessibility: { name: 'Accessibility & Inclusion', icon: <Accessibility className="w-4 h-4" />, color: 'orange' },
-  community: { name: 'Community & Safety', icon: <Users className="w-4 h-4" />, color: 'pink' }
+  analytics: { name: 'Analytics & Insights', icon: <BarChart3 className="w-4 h-4" />, color: 'emerald' },
+  accessibility: { name: 'Accessibility & Inclusion', icon: <Accessibility className="w-4 h-4" />, color: 'teal' },
+  community: { name: 'Community & Safety', icon: <Users className="w-4 h-4" />, color: 'cyan' }
 };
 
 interface AdvancedFeaturesNavProps {
@@ -142,13 +142,13 @@ export const AdvancedFeaturesNav: React.FC<AdvancedFeaturesNavProps> = ({
 
   const getCategoryColor = (color: string) => {
     const colors = {
-      purple: 'bg-purple-100 text-purple-700 border-purple-200',
-      blue: 'bg-blue-100 text-blue-700 border-blue-200',
       green: 'bg-green-100 text-green-700 border-green-200',
-      orange: 'bg-orange-100 text-orange-700 border-orange-200',
-      pink: 'bg-pink-100 text-pink-700 border-pink-200'
+      blue: 'bg-blue-100 text-blue-700 border-blue-200',
+      emerald: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+      teal: 'bg-teal-100 text-teal-700 border-teal-200',
+      cyan: 'bg-cyan-100 text-cyan-700 border-cyan-200'
     };
-    return colors[color as keyof typeof colors] || colors.purple;
+    return colors[color as keyof typeof colors] || colors.green;
   };
 
   const getStatusBadge = (status: string) => {
@@ -172,7 +172,7 @@ export const AdvancedFeaturesNav: React.FC<AdvancedFeaturesNavProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg">
+          <div className="p-2 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg">
             <Sparkles className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -182,7 +182,7 @@ export const AdvancedFeaturesNav: React.FC<AdvancedFeaturesNavProps> = ({
         </div>
         <button
           onClick={() => setShowAllFeatures(!showAllFeatures)}
-          className="text-sm text-indigo-600 hover:text-indigo-800 transition-colors"
+          className="text-sm text-green-600 hover:text-green-800 transition-colors"
         >
           {showAllFeatures ? 'Show Less' : 'Show All'}
         </button>
@@ -199,11 +199,10 @@ export const AdvancedFeaturesNav: React.FC<AdvancedFeaturesNavProps> = ({
             <motion.button
               key={feature.id}
               onClick={() => onFeatureSelect(feature.id, feature.component)}
-              className={`p-3 rounded-lg border-2 transition-all text-left ${
-                activeFeature === feature.id
-                  ? 'border-indigo-500 bg-indigo-50'
-                  : 'border-gray-200 hover:border-indigo-300 hover:bg-gray-50'
-              }`}
+              className={`p-3 rounded-lg border-2 transition-all text-left ${activeFeature === feature.id
+                ? 'border-green-500 bg-green-50'
+                : 'border-gray-200 hover:border-green-300 hover:bg-gray-50'
+                }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -218,7 +217,7 @@ export const AdvancedFeaturesNav: React.FC<AdvancedFeaturesNavProps> = ({
                       <span className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full">New</span>
                     )}
                     {feature.isPremium && (
-                      <span className="px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded-full">Pro</span>
+                      <span className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">Pro</span>
                     )}
                   </div>
                   <p className="text-xs text-gray-600 mt-1 line-clamp-2">{feature.description}</p>
@@ -271,11 +270,10 @@ export const AdvancedFeaturesNav: React.FC<AdvancedFeaturesNavProps> = ({
                           <button
                             key={feature.id}
                             onClick={() => onFeatureSelect(feature.id, feature.component)}
-                            className={`w-full flex items-center justify-between p-3 rounded-lg transition-all ${
-                              activeFeature === feature.id
-                                ? 'bg-indigo-50 border border-indigo-200'
-                                : 'hover:bg-gray-50 border border-transparent'
-                            }`}
+                            className={`w-full flex items-center justify-between p-3 rounded-lg transition-all ${activeFeature === feature.id
+                              ? 'bg-green-50 border border-green-200'
+                              : 'hover:bg-gray-50 border border-transparent'
+                              }`}
                           >
                             <div className="flex items-center space-x-3">
                               <div className="text-gray-400">
@@ -288,7 +286,7 @@ export const AdvancedFeaturesNav: React.FC<AdvancedFeaturesNavProps> = ({
                                     <span className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full">New</span>
                                   )}
                                   {feature.isPremium && (
-                                    <span className="px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded-full">Pro</span>
+                                    <span className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">Pro</span>
                                   )}
                                   {getStatusBadge(feature.status)}
                                 </div>
@@ -296,7 +294,7 @@ export const AdvancedFeaturesNav: React.FC<AdvancedFeaturesNavProps> = ({
                               </div>
                             </div>
                             {activeFeature === feature.id && (
-                              <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
+                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                             )}
                           </button>
                         ))}
@@ -314,7 +312,7 @@ export const AdvancedFeaturesNav: React.FC<AdvancedFeaturesNavProps> = ({
       <div className="mt-6 pt-6 border-t border-gray-200">
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
-            <p className="text-2xl font-bold text-indigo-600">
+            <p className="text-2xl font-bold text-green-600">
               {ADVANCED_FEATURES.filter(f => f.status === 'active').length}
             </p>
             <p className="text-xs text-gray-600">Active Features</p>
@@ -326,7 +324,7 @@ export const AdvancedFeaturesNav: React.FC<AdvancedFeaturesNavProps> = ({
             <p className="text-xs text-gray-600">New This Month</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-purple-600">
+            <p className="text-2xl font-bold text-blue-600">
               {ADVANCED_FEATURES.filter(f => f.isPremium).length}
             </p>
             <p className="text-xs text-gray-600">Premium Features</p>
@@ -335,12 +333,12 @@ export const AdvancedFeaturesNav: React.FC<AdvancedFeaturesNavProps> = ({
       </div>
 
       {/* Call to Action */}
-      <div className="mt-6 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
+      <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
         <div className="flex items-center space-x-3">
-          <Zap className="w-5 h-5 text-indigo-600" />
+          <Zap className="w-5 h-5 text-green-600" />
           <div>
-            <h4 className="font-medium text-indigo-900">Unlock Full Potential</h4>
-            <p className="text-sm text-indigo-700">
+            <h4 className="font-medium text-green-900">Unlock Full Potential</h4>
+            <p className="text-sm text-green-700">
               Experience the future of rural technology with our advanced AI-powered features.
             </p>
           </div>

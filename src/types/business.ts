@@ -1,27 +1,27 @@
 export interface Business {
   _id: string;
-  owner: {
+  owner?: {
     _id: string;
     name: string;
     email: string;
   };
   name: string;
-  description: string;
-  category: string;
-  subcategory: string;
-  services: string[];
-  capabilities: string[];
-  location: {
-    address: string;
-    suburb: string;
-    state: string;
-    postcode: string;
-    coordinates: {
+  description?: string;
+  category?: string;
+  subcategory?: string;
+  services?: string[];
+  capabilities?: string[];
+  location?: {
+    address?: string;
+    suburb?: string;
+    state?: string;
+    postcode?: string;
+    coordinates?: {
       latitude: number;
       longitude: number;
     };
-  };
-  contact: {
+  } | string; // Allow string for backward compatibility
+  contact?: {
     phone?: string;
     email?: string;
     website?: string;
@@ -31,24 +31,24 @@ export interface Business {
       linkedin?: string;
     };
   };
-  businessHours: {
+  businessHours?: {
     [key: string]: {
       open?: string;
       close?: string;
       closed?: boolean;
     };
   };
-  verification: {
+  verification?: {
     status: 'pending' | 'verified' | 'rejected';
     verifiedAt?: string;
     verificationDocuments?: string[];
     abn?: string;
     acn?: string;
   };
-  ratings: {
+  ratings?: {
     average: number;
     count: number;
-    breakdown: {
+    breakdown?: {
       5: number;
       4: number;
       3: number;
@@ -56,19 +56,23 @@ export interface Business {
       1: number;
     };
   };
-  reviews: BusinessReview[];
-  economicData: {
+  // Legacy fields for backward compatibility
+  type?: string;
+  rating?: number;
+  reviewCount?: number;
+  reviews?: BusinessReview[];
+  economicData?: {
     employeeCount?: number;
     annualRevenue?: string;
     establishedYear?: number;
-    businessType: 'sole-trader' | 'partnership' | 'company' | 'trust';
+    businessType?: 'sole-trader' | 'partnership' | 'company' | 'trust';
   };
-  tags: string[];
-  isActive: boolean;
-  isPremium: boolean;
+  tags?: string[];
+  isActive?: boolean;
+  isPremium?: boolean;
   featuredUntil?: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface BusinessReview {

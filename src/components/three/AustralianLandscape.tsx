@@ -25,16 +25,16 @@ const LandscapeScene: React.FC<AustralianLandscapeProps> = ({
     <group ref={sceneRef}>
       {/* Lighting System */}
       <LightingSystem timeOfDay={timeOfDay} weatherType={weatherType} />
-      
+
       {/* Terrain System */}
       <TerrainSystem region={region} />
-      
+
       {/* Weather Effects */}
       <WeatherSystem type={weatherType} />
-      
+
       {/* Australian Flora */}
       <FloraSystem region={region} density={0.3} />
-      
+
       {/* Sky and Environment */}
       <Sky
         distance={450000}
@@ -56,7 +56,7 @@ export const AustralianLandscape: React.FC<AustralianLandscapeProps> = (props) =
       <Canvas
         camera={{ position: [0, 50, 100], fov: 60 }}
         shadows
-        gl={{ 
+        gl={{
           antialias: true,
           powerPreference: 'high-performance',
           alpha: false
@@ -68,7 +68,7 @@ export const AustralianLandscape: React.FC<AustralianLandscapeProps> = (props) =
         }}
       >
         <LandscapeScene {...props} />
-        <CameraController />
+        <CameraController disabled={true} />
         <OrbitControls
           enablePan={true}
           enableZoom={true}

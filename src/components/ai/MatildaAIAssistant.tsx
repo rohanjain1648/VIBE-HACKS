@@ -1,21 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Mic, 
-  MicOff, 
-  Send, 
-  Bot, 
-  Heart, 
-  Lightbulb, 
-  AlertTriangle,
+import {
+  Mic,
+  MicOff,
+  Send,
+  Bot,
   TrendingUp,
-  Users,
-  MessageCircle,
   Volume2,
   VolumeX,
-  Settings,
-  Minimize2,
-  Maximize2
+  Minimize2
 } from 'lucide-react';
 
 interface MatildaMessage {
@@ -126,16 +119,22 @@ export const MatildaAIAssistant: React.FC = () => {
   const [userContext] = useState<UserContext>(MOCK_USER_CONTEXT);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const currentUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const initializedRef = useRef(false);
 
   useEffect(() => {
-    // Initialize with greeting
-    const greeting = MATILDA_PERSONALITY.greeting[Math.floor(Math.random() * MATILDA_PERSONALITY.greeting.length)];
-    addMatildaMessage(greeting, 'happy', [
-      "Tell me about your farm",
-      "How are you feeling today?",
-      "What can I help you with?",
-      "Show me local weather"
-    ]);
+    // Initialize with greeting only once
+    if (!initializedRef.current) {
+      initializedRef.current = true;
+      const greetingIndex = Math.floor(Math.random() * MATILDA_PERSONALITY.greeting.length);
+      const greeting = MATILDA_PERSONALITY.greeting[greetingIndex] || MATILDA_PERSONALITY.greeting[0];
+      addMatildaMessage(greeting, 'happy', [
+        "Tell me about your farm",
+        "How are you feeling today?",
+        "What can I help you with?",
+        "Show me local weather"
+      ]);
+    }
 
     // Initialize speech recognition
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -146,9 +145,11 @@ export const MatildaAIAssistant: React.FC = () => {
       recognitionRef.current.lang = userContext.preferences.language;
 
       recognitionRef.current.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        setInputText(transcript);
-        handleSendMessage(transcript);
+        if (event.results && event.results[0] && event.results[0][0]) {
+          const transcript = event.results[0][0].transcript;
+          setInputText(transcript);
+          handleSendMessage(transcript);
+        }
       };
 
       recognitionRef.current.onend = () => {
@@ -166,7 +167,7 @@ export const MatildaAIAssistant: React.FC = () => {
   };
 
   const addMatildaMessage = (
-    content: string, 
+    content: string,
     emotion: MatildaMessage['emotion'] = 'neutral',
     suggestions?: string[],
     actionItems?: MatildaMessage['actionItems']
@@ -176,20 +177,33 @@ export const MatildaAIAssistant: React.FC = () => {
       type: 'matilda',
       content,
       timestamp: new Date(),
-      emotion,
-      suggestions,
-      actionItems
+      ...(emotion && { emotion }),
+      ...(suggestions && { suggestions }),
+      ...(actionItems && { actionItems })
     };
     setMessages(prev => [...prev, message]);
 
     // Text-to-speech if enabled
     if (voiceEnabled && 'speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(content);
+      // Remove emojis and clean text for TTS
+      const cleanContent = content.replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
+
+      const utterance = new SpeechSynthesisUtterance(cleanContent);
       utterance.rate = 0.9;
       utterance.pitch = 1.1;
-      utterance.voice = speechSynthesis.getVoices().find(voice => 
+      const voices = speechSynthesis.getVoices();
+      utterance.voice = voices.find(voice =>
         voice.name.includes('Female') || voice.name.includes('Karen')
-      ) || speechSynthesis.getVoices()[0];
+      ) || voices[0] || null;
+
+      // Store reference for muting
+      currentUtteranceRef.current = utterance;
+
+      // Clear reference when speech ends
+      utterance.onend = () => {
+        currentUtteranceRef.current = null;
+      };
+
       speechSynthesis.speak(utterance);
     }
   };
@@ -201,7 +215,7 @@ export const MatildaAIAssistant: React.FC = () => {
     actionItems?: MatildaMessage['actionItems'];
   } => {
     const lowerMessage = userMessage.toLowerCase();
-    
+
     // Analyze user sentiment and context
     if (lowerMessage.includes('sad') || lowerMessage.includes('depressed') || lowerMessage.includes('down')) {
       return {
@@ -233,7 +247,7 @@ export const MatildaAIAssistant: React.FC = () => {
     if (lowerMessage.includes('weather') || lowerMessage.includes('rain') || lowerMessage.includes('drought')) {
       return {
         content: `I've been keeping an eye on the weather patterns around ${userContext.location}! 🌤️ Based on the latest forecasts, we're expecting some changes that might affect your ${userContext.farmType}. The soil moisture levels are looking good for this time of year, and I'd recommend checking your irrigation schedule.`,
-        emotion: 'informative',
+        emotion: 'neutral',
         suggestions: [
           "Show detailed weather forecast",
           "Check crop advisories",
@@ -353,6 +367,17 @@ export const MatildaAIAssistant: React.FC = () => {
     handleSendMessage(suggestion);
   };
 
+  const toggleVoice = () => {
+    if (voiceEnabled) {
+      // Stop current speech immediately
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+      }
+      currentUtteranceRef.current = null;
+    }
+    setVoiceEnabled(!voiceEnabled);
+  };
+
   const getEmotionColor = (emotion: MatildaMessage['emotion']) => {
     switch (emotion) {
       case 'happy': return 'text-green-600';
@@ -382,7 +407,7 @@ export const MatildaAIAssistant: React.FC = () => {
       >
         <button
           onClick={() => setIsMinimized(false)}
-          className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group"
+          className="bg-gradient-to-r from-green-500 to-blue-500 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group"
         >
           <Bot className="w-6 h-6 group-hover:scale-110 transition-transform" />
           <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
@@ -400,7 +425,7 @@ export const MatildaAIAssistant: React.FC = () => {
       className="fixed bottom-4 right-4 w-96 h-[600px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col z-50 overflow-hidden"
     >
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 flex items-center justify-between">
+      <div className="bg-gradient-to-r from-green-500 to-blue-500 text-white p-4 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className="relative">
             <Bot className="w-8 h-8" />
@@ -413,7 +438,7 @@ export const MatildaAIAssistant: React.FC = () => {
         </div>
         <div className="flex items-center space-x-2">
           <button
-            onClick={() => setVoiceEnabled(!voiceEnabled)}
+            onClick={toggleVoice}
             className="p-2 hover:bg-white/20 rounded-lg transition-colors"
           >
             {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
@@ -438,11 +463,10 @@ export const MatildaAIAssistant: React.FC = () => {
               exit={{ opacity: 0, y: -10 }}
               className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div className={`max-w-[80%] ${
-                message.type === 'user' 
-                  ? 'bg-blue-500 text-white rounded-l-2xl rounded-tr-2xl' 
-                  : 'bg-gray-100 text-gray-800 rounded-r-2xl rounded-tl-2xl'
-              } p-3 shadow-sm`}>
+              <div className={`max-w-[80%] ${message.type === 'user'
+                ? 'bg-blue-500 text-white rounded-l-2xl rounded-tr-2xl'
+                : 'bg-gray-100 text-gray-800 rounded-r-2xl rounded-tl-2xl'
+                } p-3 shadow-sm`}>
                 {message.type === 'matilda' && (
                   <div className="flex items-center space-x-2 mb-2">
                     <span className="text-lg">{getEmotionIcon(message.emotion)}</span>
@@ -452,7 +476,7 @@ export const MatildaAIAssistant: React.FC = () => {
                   </div>
                 )}
                 <p className="text-sm leading-relaxed">{message.content}</p>
-                
+
                 {/* Suggestions */}
                 {message.suggestions && (
                   <div className="mt-3 space-y-1">
@@ -460,7 +484,7 @@ export const MatildaAIAssistant: React.FC = () => {
                       <button
                         key={index}
                         onClick={() => handleSuggestionClick(suggestion)}
-                        className="block w-full text-left text-xs bg-white/50 hover:bg-white/80 rounded-lg p-2 transition-colors border border-gray-200"
+                        className="block w-full text-left text-xs bg-white/50 hover:bg-green-50 rounded-lg p-2 transition-colors border border-gray-200"
                       >
                         {suggestion}
                       </button>
@@ -480,7 +504,7 @@ export const MatildaAIAssistant: React.FC = () => {
                           </div>
                           <button
                             onClick={item.action}
-                            className="text-blue-500 hover:text-blue-700 transition-colors"
+                            className="text-green-500 hover:text-green-700 transition-colors"
                           >
                             <TrendingUp className="w-4 h-4" />
                           </button>
@@ -503,7 +527,7 @@ export const MatildaAIAssistant: React.FC = () => {
           >
             <div className="bg-gray-100 rounded-r-2xl rounded-tl-2xl p-3 shadow-sm">
               <div className="flex items-center space-x-2">
-                <Bot className="w-4 h-4 text-purple-500" />
+                <Bot className="w-4 h-4 text-green-500" />
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
@@ -524,17 +548,16 @@ export const MatildaAIAssistant: React.FC = () => {
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+              onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
               placeholder="Ask Matilda anything..."
-              className="w-full p-3 pr-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full p-3 pr-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
             <button
               onClick={handleVoiceInput}
-              className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-lg transition-colors ${
-                isListening 
-                  ? 'text-red-500 bg-red-50' 
-                  : 'text-gray-400 hover:text-purple-500 hover:bg-purple-50'
-              }`}
+              className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-lg transition-colors ${isListening
+                ? 'text-red-500 bg-red-50'
+                : 'text-gray-400 hover:text-green-500 hover:bg-green-50'
+                }`}
             >
               {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
             </button>
@@ -542,7 +565,7 @@ export const MatildaAIAssistant: React.FC = () => {
           <button
             onClick={() => handleSendMessage()}
             disabled={!inputText.trim()}
-            className="p-3 bg-purple-500 text-white rounded-xl hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="p-3 bg-green-500 text-white rounded-xl hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <Send className="w-4 h-4" />
           </button>

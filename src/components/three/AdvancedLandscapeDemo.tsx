@@ -19,7 +19,7 @@ interface DemoSettings {
 
 const DemoControls: React.FC<DemoControlsProps> = ({ onSettingsChange, settings }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  
+
   const sections = [
     { id: 'agriculture', name: 'Agriculture', icon: '🌾' },
     { id: 'community', name: 'Community', icon: '🏘️' },
@@ -29,7 +29,7 @@ const DemoControls: React.FC<DemoControlsProps> = ({ onSettingsChange, settings 
     { id: 'culture', name: 'Culture', icon: '📖' },
     { id: 'skills', name: 'Skills', icon: '🎓' }
   ];
-  
+
   const weatherTypes = [
     { id: 'sunny', name: 'Sunny', icon: '☀️' },
     { id: 'cloudy', name: 'Cloudy', icon: '☁️' },
@@ -37,13 +37,13 @@ const DemoControls: React.FC<DemoControlsProps> = ({ onSettingsChange, settings 
     { id: 'windy', name: 'Windy', icon: '💨' },
     { id: 'stormy', name: 'Stormy', icon: '⛈️' }
   ];
-  
+
   const updateSetting = (key: keyof DemoSettings, value: any) => {
     onSettingsChange({ ...settings, [key]: value });
   };
-  
+
   return (
-    <div className="fixed top-4 left-4 z-50">
+    <div className="fixed top-20 left-4 z-50">
       <button
         className="bg-blue-600 text-white p-3 rounded-lg shadow-lg hover:bg-blue-700 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
@@ -51,7 +51,7 @@ const DemoControls: React.FC<DemoControlsProps> = ({ onSettingsChange, settings 
         <span className="mr-2">🎛️</span>
         Demo Controls
       </button>
-      
+
       {isExpanded && (
         <div className="absolute top-full left-0 mt-2 bg-white rounded-lg shadow-xl border min-w-80 max-h-96 overflow-y-auto">
           <div className="p-4 border-b">
@@ -60,7 +60,7 @@ const DemoControls: React.FC<DemoControlsProps> = ({ onSettingsChange, settings 
               Explore the enhanced 3D landscape features
             </p>
           </div>
-          
+
           <div className="p-4 space-y-4">
             {/* Section Selection */}
             <div>
@@ -71,11 +71,10 @@ const DemoControls: React.FC<DemoControlsProps> = ({ onSettingsChange, settings 
                 {sections.map((section) => (
                   <button
                     key={section.id}
-                    className={`p-2 rounded text-sm transition-colors ${
-                      settings.section === section.id
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-gray-100 hover:bg-gray-200'
-                    }`}
+                    className={`p-2 rounded text-sm transition-colors ${settings.section === section.id
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-100 hover:bg-gray-200'
+                      }`}
                     onClick={() => updateSetting('section', section.id)}
                   >
                     <span className="mr-1">{section.icon}</span>
@@ -84,7 +83,7 @@ const DemoControls: React.FC<DemoControlsProps> = ({ onSettingsChange, settings 
                 ))}
               </div>
             </div>
-            
+
             {/* Time of Day */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -104,7 +103,7 @@ const DemoControls: React.FC<DemoControlsProps> = ({ onSettingsChange, settings 
                 <span>Midnight</span>
               </div>
             </div>
-            
+
             {/* Weather Type */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -114,11 +113,10 @@ const DemoControls: React.FC<DemoControlsProps> = ({ onSettingsChange, settings 
                 {weatherTypes.map((weather) => (
                   <button
                     key={weather.id}
-                    className={`p-2 rounded text-sm transition-colors ${
-                      settings.weatherType === weather.id
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-gray-100 hover:bg-gray-200'
-                    }`}
+                    className={`p-2 rounded text-sm transition-colors ${settings.weatherType === weather.id
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-100 hover:bg-gray-200'
+                      }`}
                     onClick={() => updateSetting('weatherType', weather.id)}
                   >
                     <span className="mr-1">{weather.icon}</span>
@@ -127,7 +125,7 @@ const DemoControls: React.FC<DemoControlsProps> = ({ onSettingsChange, settings 
                 ))}
               </div>
             </div>
-            
+
             {/* Feature Toggles */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -145,7 +143,7 @@ const DemoControls: React.FC<DemoControlsProps> = ({ onSettingsChange, settings 
                     <input
                       type="checkbox"
                       checked={settings[feature.key as keyof DemoSettings] as boolean}
-                      onChange={(e) => updateSetting(feature.key, e.target.checked)}
+                      onChange={(e) => updateSetting(feature.key as keyof DemoSettings, e.target.checked)}
                       className="rounded"
                     />
                     <span className="text-sm">
@@ -157,7 +155,7 @@ const DemoControls: React.FC<DemoControlsProps> = ({ onSettingsChange, settings 
               </div>
             </div>
           </div>
-          
+
           <div className="p-4 border-t bg-gray-50 rounded-b-lg">
             <h4 className="font-medium text-gray-900 mb-2">New Features Showcase</h4>
             <div className="text-sm text-gray-600 space-y-1">
@@ -187,26 +185,26 @@ export const AdvancedLandscapeDemo: React.FC = () => {
     enableWildlife: true,
     enableParticleEffects: true
   });
-  
+
   const [interactionLog, setInteractionLog] = useState<string[]>([]);
-  
+
   // Auto-cycle through sections for demo
   const [autoCycle, setAutoCycle] = useState(false);
-  
+
   useEffect(() => {
     if (!autoCycle) return;
-    
+
     const sections = ['agriculture', 'community', 'emergency', 'wellbeing', 'business', 'culture', 'skills'];
     let currentIndex = sections.indexOf(settings.section);
-    
+
     const interval = setInterval(() => {
       currentIndex = (currentIndex + 1) % sections.length;
-      setSettings(prev => ({ ...prev, section: sections[currentIndex] }));
+      setSettings(prev => ({ ...prev, section: sections[currentIndex] || 'agriculture' }));
     }, 8000); // Change section every 8 seconds
-    
+
     return () => clearInterval(interval);
   }, [autoCycle, settings.section]);
-  
+
   // Auto-cycle time of day for demo
   useEffect(() => {
     const interval = setInterval(() => {
@@ -215,84 +213,106 @@ export const AdvancedLandscapeDemo: React.FC = () => {
         timeOfDay: (prev.timeOfDay + 1) % 24
       }));
     }, 30000); // Change time every 30 seconds
-    
+
     return () => clearInterval(interval);
   }, []);
-  
+
   const handleSectionChange = (section: string) => {
     setSettings(prev => ({ ...prev, section }));
     setInteractionLog(prev => [...prev, `Section changed to: ${section}`]);
   };
-  
+
   const handleInteraction = (type: string, data: any) => {
     setInteractionLog(prev => [...prev, `Interaction: ${type} - ${data.action || 'unknown'}`]);
   };
-  
+
   return (
-    <div className="w-full h-screen relative">
-      <EnhancedAustralianLandscape
-        initialSection={settings.section}
-        timeOfDay={settings.timeOfDay}
-        weatherType={settings.weatherType}
-        enableMobileControls={settings.enableMobileControls}
-        enableAccessibility={settings.enableAccessibility}
-        enablePerformanceMonitoring={settings.enablePerformanceMonitoring}
-        enableWildlife={settings.enableWildlife}
-        enableParticleEffects={settings.enableParticleEffects}
-        onSectionChange={handleSectionChange}
-        onInteraction={handleInteraction}
-      />
-      
-      <DemoControls
-        settings={settings}
-        onSettingsChange={setSettings}
-      />
-      
-      {/* Auto-cycle toggle */}
-      <div className="fixed top-4 right-4 z-50">
-        <button
-          className={`p-3 rounded-lg shadow-lg transition-colors ${
-            autoCycle ? 'bg-green-600 text-white' : 'bg-gray-600 text-white'
-          }`}
-          onClick={() => setAutoCycle(!autoCycle)}
-        >
-          <span className="mr-2">{autoCycle ? '⏸️' : '▶️'}</span>
-          {autoCycle ? 'Stop Auto-Demo' : 'Start Auto-Demo'}
-        </button>
-      </div>
-      
-      {/* Interaction log */}
-      {interactionLog.length > 0 && (
-        <div className="fixed bottom-4 left-4 z-50 max-w-md">
-          <div className="bg-black bg-opacity-80 text-white p-4 rounded-lg max-h-32 overflow-y-auto">
-            <h4 className="font-medium mb-2">Interaction Log</h4>
-            <div className="text-sm space-y-1">
-              {interactionLog.slice(-5).map((log, index) => (
-                <div key={index} className="text-gray-300">
-                  {log}
-                </div>
-              ))}
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center min-w-0 flex-1">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">3D Landscape Explorer</h1>
+              <span className="ml-2 text-xs sm:text-sm text-gray-500 hidden sm:inline">Interactive rural Australia visualization</span>
             </div>
-            {interactionLog.length > 5 && (
-              <div className="text-xs text-gray-400 mt-1">
-                ... and {interactionLog.length - 5} more
+            <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
+              <div className="text-xs sm:text-sm text-gray-600">
+                <span className="hidden sm:inline">Current: </span><span className="font-medium capitalize">{settings.section}</span>
               </div>
-            )}
+              <div className="text-xs sm:text-sm text-gray-600">
+                <span className="hidden sm:inline">Time: </span><span className="font-medium">{settings.timeOfDay}:00</span>
+              </div>
+            </div>
           </div>
         </div>
-      )}
-      
-      {/* Feature showcase overlay */}
-      <div className="fixed bottom-4 right-4 z-50">
-        <div className="bg-white rounded-lg shadow-lg p-4 max-w-xs">
-          <h3 className="font-semibold mb-2">🎉 New Features</h3>
-          <div className="text-sm text-gray-600 space-y-1">
-            <div>✨ Enhanced particle effects</div>
-            <div>🦘 Animated Australian wildlife</div>
-            <div>📱 Mobile touch controls</div>
-            <div>♿ Accessibility support</div>
-            <div>🎯 Interactive 3D hotspots</div>
-            <div>🎬 Smooth scene transitions</div>
+      </div>
+
+      {/* 3D Scene Container */}
+      <div className="w-full relative" style={{ height: 'calc(100vh - 64px)' }}>
+        <EnhancedAustralianLandscape
+          initialSection={settings.section}
+          timeOfDay={settings.timeOfDay}
+          weatherType={settings.weatherType}
+          enableMobileControls={settings.enableMobileControls}
+          enableAccessibility={settings.enableAccessibility}
+          enablePerformanceMonitoring={settings.enablePerformanceMonitoring}
+          enableWildlife={settings.enableWildlife}
+          enableParticleEffects={settings.enableParticleEffects}
+          onSectionChange={handleSectionChange}
+          onInteraction={handleInteraction}
+        />
+
+        <DemoControls
+          settings={settings}
+          onSettingsChange={setSettings}
+        />
+
+        {/* Auto-cycle toggle */}
+        <div className="fixed top-20 right-4 z-50">
+          <button
+            className={`p-3 rounded-lg shadow-lg transition-colors ${autoCycle ? 'bg-green-600 text-white' : 'bg-gray-600 text-white'
+              }`}
+            onClick={() => setAutoCycle(!autoCycle)}
+          >
+            <span className="mr-2">{autoCycle ? '⏸️' : '▶️'}</span>
+            {autoCycle ? 'Stop Auto-Demo' : 'Start Auto-Demo'}
+          </button>
+        </div>
+
+        {/* Interaction log */}
+        {interactionLog.length > 0 && (
+          <div className="fixed bottom-4 left-4 z-50 max-w-md">
+            <div className="bg-black bg-opacity-80 text-white p-4 rounded-lg max-h-32 overflow-y-auto">
+              <h4 className="font-medium mb-2">Interaction Log</h4>
+              <div className="text-sm space-y-1">
+                {interactionLog.slice(-5).map((log, index) => (
+                  <div key={index} className="text-gray-300">
+                    {log}
+                  </div>
+                ))}
+              </div>
+              {interactionLog.length > 5 && (
+                <div className="text-xs text-gray-400 mt-1">
+                  ... and {interactionLog.length - 5} more
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Feature showcase overlay */}
+        <div className="fixed bottom-4 right-4 z-50">
+          <div className="bg-white rounded-lg shadow-lg p-4 max-w-xs">
+            <h3 className="font-semibold mb-2">🎉 New Features</h3>
+            <div className="text-sm text-gray-600 space-y-1">
+              <div>✨ Enhanced particle effects</div>
+              <div>🦘 Animated Australian wildlife</div>
+              <div>📱 Mobile touch controls</div>
+              <div>♿ Accessibility support</div>
+              <div>🎯 Interactive 3D hotspots</div>
+              <div>🎬 Smooth scene transitions</div>
+            </div>
           </div>
         </div>
       </div>

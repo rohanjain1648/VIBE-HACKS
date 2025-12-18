@@ -13,7 +13,13 @@ const port = 3001;
 
 // Middleware
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:3000'],
+    origin: [
+        'http://localhost:5173',
+        'http://localhost:3000',
+        'https://rural-connect-ai.vercel.app',
+        'https://*.vercel.app',
+        /^https:\/\/.*\.vercel\.app$/
+    ],
     credentials: true
 }));
 app.use(express.json());
@@ -434,12 +440,64 @@ const mockWellbeingDashboard = {
 // Business Dashboard Mock Data
 const mockBusinessDashboard = {
     profile: {
-        id: 'business-1',
+        _id: 'business-1',
+        owner: {
+            _id: 'owner-1',
+            name: 'John Smith',
+            email: 'john@ruralsupplies.com.au'
+        },
         name: 'Rural Supplies Co',
-        type: 'Agricultural Supplies',
-        location: 'Dubbo, NSW',
-        rating: 4.7,
-        reviewCount: 45
+        description: 'Your trusted partner for all agricultural supplies and equipment in the Dubbo region.',
+        category: 'Agriculture',
+        subcategory: 'Farm Equipment',
+        services: ['Equipment Sales', 'Parts & Service', 'Consultation'],
+        capabilities: ['Heavy Machinery', 'Irrigation Systems', 'Crop Protection'],
+        location: {
+            address: '123 Main Street',
+            suburb: 'Dubbo',
+            state: 'NSW',
+            postcode: '2830',
+            coordinates: {
+                latitude: -32.2431,
+                longitude: 148.6017
+            }
+        },
+        contact: {
+            phone: '02 6882 1234',
+            email: 'info@ruralsupplies.com.au',
+            website: 'https://ruralsupplies.com.au'
+        },
+        businessHours: {
+            monday: { open: '8:00', close: '17:00' },
+            tuesday: { open: '8:00', close: '17:00' },
+            wednesday: { open: '8:00', close: '17:00' },
+            thursday: { open: '8:00', close: '17:00' },
+            friday: { open: '8:00', close: '17:00' },
+            saturday: { open: '9:00', close: '13:00' },
+            sunday: { closed: true }
+        },
+        verification: {
+            status: 'verified',
+            verifiedAt: new Date('2024-01-15').toISOString(),
+            abn: '12345678901'
+        },
+        ratings: {
+            average: 4.7,
+            count: 45,
+            breakdown: { 5: 28, 4: 12, 3: 4, 2: 1, 1: 0 }
+        },
+        reviews: [],
+        economicData: {
+            employeeCount: 12,
+            annualRevenue: '1m-5m',
+            establishedYear: 1995,
+            businessType: 'company'
+        },
+        tags: ['agricultural', 'equipment', 'supplies', 'trusted'],
+        isActive: true,
+        isPremium: true,
+        createdAt: new Date('2023-01-15').toISOString(),
+        updatedAt: new Date().toISOString()
     },
     analytics: {
         views: 234,
@@ -586,7 +644,7 @@ app.get('/api/v1/services', (req, res) => {
 
 app.get('/api/v1/services/search', (req, res) => {
     const query = req.query.q || '';
-    const filtered = mockServices.filter(s => 
+    const filtered = mockServices.filter(s =>
         s.name.toLowerCase().includes(query.toLowerCase()) ||
         s.category.toLowerCase().includes(query.toLowerCase())
     );
@@ -858,31 +916,106 @@ app.post('/api/wellbeing/peer-chat', (req, res) => {
 // ============================================
 
 app.get('/api/business/directory', (req, res) => {
+    // Get all businesses
+    let businesses = [
+        mockBusinessDashboard.profile,
+        {
+            _id: 'business-2',
+            owner: {
+                _id: 'owner-2',
+                name: 'Sarah Johnson',
+                email: 'sarah@farmequipment.com.au'
+            },
+            name: 'Farm Equipment Hire',
+            description: 'Professional farm equipment rental services.',
+            category: 'Agriculture',
+            subcategory: 'Equipment Rental',
+            services: ['Equipment Rental', 'Delivery'],
+            location: {
+                address: '456 Industrial Drive',
+                suburb: 'Orange',
+                state: 'NSW',
+                postcode: '2800'
+            },
+            contact: { phone: '02 6362 5678' },
+            verification: { status: 'verified' },
+            ratings: { average: 4.5, count: 32 },
+            economicData: { businessType: 'company' },
+            isActive: true,
+            isPremium: false,
+            tags: ['equipment', 'rental']
+        },
+        {
+            _id: 'business-3',
+            owner: {
+                _id: 'owner-3',
+                name: 'Michael Brown',
+                email: 'michael@organicproduce.coop'
+            },
+            name: 'Organic Produce Co-op',
+            description: 'Community-owned cooperative supporting organic farmers.',
+            category: 'Food & Beverage',
+            subcategory: 'Agricultural Co-op',
+            services: ['Produce Distribution', 'Farmer Support'],
+            location: {
+                address: '789 Cooperative Way',
+                suburb: 'Wagga Wagga',
+                state: 'NSW',
+                postcode: '2650'
+            },
+            contact: { phone: '02 6921 9876' },
+            verification: { status: 'verified' },
+            ratings: { average: 4.8, count: 67 },
+            economicData: { businessType: 'company' },
+            isActive: true,
+            isPremium: true,
+            tags: ['organic', 'cooperative']
+        }
+    ];
+
+    // Apply filters
+    const { category, subcategory, rating, verified, businessType, page = 1, limit = 20 } = req.query;
+
+    // Filter by category
+    if (category) {
+        businesses = businesses.filter(b => b.category === category);
+    }
+
+    // Filter by subcategory
+    if (subcategory) {
+        businesses = businesses.filter(b => b.subcategory === subcategory);
+    }
+
+    // Filter by minimum rating
+    if (rating) {
+        const minRating = parseFloat(rating);
+        businesses = businesses.filter(b => (b.ratings?.average || b.rating || 0) >= minRating);
+    }
+
+    // Filter by verification status
+    if (verified === 'true') {
+        businesses = businesses.filter(b => b.verification?.status === 'verified');
+    }
+
+    // Filter by business type
+    if (businessType) {
+        businesses = businesses.filter(b => b.economicData?.businessType === businessType);
+    }
+
+    // Pagination
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const startIndex = (pageNum - 1) * limitNum;
+    const endIndex = startIndex + limitNum;
+    const paginatedBusinesses = businesses.slice(startIndex, endIndex);
+
     res.json({
         success: true,
         data: {
-            businesses: [
-                mockBusinessDashboard.profile,
-                {
-                    id: 'business-2',
-                    name: 'Farm Equipment Hire',
-                    type: 'Equipment Rental',
-                    location: 'Orange, NSW',
-                    rating: 4.5,
-                    reviewCount: 32
-                },
-                {
-                    id: 'business-3',
-                    name: 'Organic Produce Co-op',
-                    type: 'Agricultural Co-op',
-                    location: 'Wagga Wagga, NSW',
-                    rating: 4.8,
-                    reviewCount: 67
-                }
-            ],
-            total: 3,
-            page: 1,
-            totalPages: 1
+            businesses: paginatedBusinesses,
+            total: businesses.length,
+            page: pageNum,
+            totalPages: Math.ceil(businesses.length / limitNum)
         }
     });
 });
@@ -978,31 +1111,47 @@ app.get('/wellbeing/resources', (req, res) => {
 
 // Business routes without /api
 app.get('/business/directory', (req, res) => {
+    // Same filtering logic as /api/business/directory
+    let businesses = [
+        mockBusinessDashboard.profile,
+        {
+            _id: 'business-2',
+            name: 'Farm Equipment Hire',
+            category: 'Agriculture',
+            subcategory: 'Equipment Rental',
+            verification: { status: 'verified' },
+            ratings: { average: 4.5, count: 32 },
+            economicData: { businessType: 'company' }
+        },
+        {
+            _id: 'business-3',
+            name: 'Organic Produce Co-op',
+            category: 'Food & Beverage',
+            subcategory: 'Agricultural Co-op',
+            verification: { status: 'verified' },
+            ratings: { average: 4.8, count: 67 },
+            economicData: { businessType: 'company' }
+        }
+    ];
+
+    const { category, rating, verified, page = 1, limit = 20 } = req.query;
+
+    if (category) businesses = businesses.filter(b => b.category === category);
+    if (rating) businesses = businesses.filter(b => (b.ratings?.average || 0) >= parseFloat(rating));
+    if (verified === 'true') businesses = businesses.filter(b => b.verification?.status === 'verified');
+
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const startIndex = (pageNum - 1) * limitNum;
+    const paginatedBusinesses = businesses.slice(startIndex, startIndex + limitNum);
+
     res.json({
         success: true,
         data: {
-            businesses: [
-                mockBusinessDashboard.profile,
-                {
-                    id: 'business-2',
-                    name: 'Farm Equipment Hire',
-                    type: 'Equipment Rental',
-                    location: 'Orange, NSW',
-                    rating: 4.5,
-                    reviewCount: 32
-                },
-                {
-                    id: 'business-3',
-                    name: 'Organic Produce Co-op',
-                    type: 'Agricultural Co-op',
-                    location: 'Wagga Wagga, NSW',
-                    rating: 4.8,
-                    reviewCount: 67
-                }
-            ],
-            total: 3,
-            page: parseInt(req.query.page) || 1,
-            totalPages: 1
+            businesses: paginatedBusinesses,
+            total: businesses.length,
+            page: pageNum,
+            totalPages: Math.ceil(businesses.length / limitNum)
         }
     });
 });
@@ -1017,11 +1166,11 @@ app.get('/business/:businessId/analytics', (req, res) => {
 
 app.post('/api/voice/process-command', (req, res) => {
     const { text, language, confidence } = req.body;
-    
+
     // Mock voice command processing
     let action = 'unknown';
     let response = '';
-    
+
     if (text.toLowerCase().includes('search') || text.includes('खोजें') || text.includes('খুঁজুন')) {
         action = 'search';
         response = language === 'hi-IN' ? 'आपके लिए खोज रहा हूं...' : 'Searching for you now...';
@@ -1032,7 +1181,7 @@ app.post('/api/voice/process-command', (req, res) => {
         action = 'agriculture';
         response = language === 'hi-IN' ? 'कृषि डैशबोर्ड खोल रहा हूं...' : 'Opening agriculture dashboard...';
     }
-    
+
     res.json({
         success: true,
         data: {
@@ -1288,15 +1437,15 @@ app.post('/api/features/accessibility', (req, res) => {
 
 app.post('/api/ai/matilda/chat', (req, res) => {
     const { message, context } = req.body;
-    
+
     // Mock AI response generation
     let response = "I'm here to help you with anything rural life related! ";
     let emotion = 'supportive';
     let suggestions = [];
     let actionItems = [];
-    
+
     const lowerMessage = message.toLowerCase();
-    
+
     if (lowerMessage.includes('weather')) {
         response = "I've been monitoring the weather patterns in your area! The forecast shows some interesting changes coming up that might affect your farming operations.";
         emotion = 'informative';
@@ -1316,7 +1465,7 @@ app.post('/api/ai/matilda/chat', (req, res) => {
         emotion = 'supportive';
         suggestions = ['Farm management', 'Mental health', 'Business opportunities', 'Community connections'];
     }
-    
+
     res.json({
         success: true,
         data: {

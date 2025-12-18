@@ -74,9 +74,8 @@ const BusinessCard: React.FC<BusinessCardProps> = ({ business, onClick }) => {
 
   return (
     <div
-      className={`bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden ${
-        onClick ? 'cursor-pointer' : ''
-      }`}
+      className={`bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden ${onClick ? 'cursor-pointer' : ''
+        }`}
       onClick={handleCardClick}
     >
       {/* Header */}
@@ -87,7 +86,7 @@ const BusinessCard: React.FC<BusinessCardProps> = ({ business, onClick }) => {
               <h3 className="text-lg font-semibold text-gray-900 truncate">
                 {business.name}
               </h3>
-              {getVerificationIcon(business.verification.status)}
+              {business.verification && getVerificationIcon(business.verification.status)}
               {business.isPremium && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
                   Premium
@@ -95,30 +94,32 @@ const BusinessCard: React.FC<BusinessCardProps> = ({ business, onClick }) => {
               )}
             </div>
             <p className="text-sm text-gray-600 mb-2">
-              {business.category} • {business.subcategory}
+              {business.category || business.type} {business.subcategory && `• ${business.subcategory}`}
             </p>
           </div>
         </div>
 
         {/* Rating */}
-        {business.ratings.count > 0 && (
+        {(business.ratings?.count > 0 || business.rating) && (
           <div className="flex items-center gap-2 mb-3">
             <div className="flex items-center">
-              {renderStars(business.ratings.average)}
+              {renderStars(business.ratings?.average || business.rating || 0)}
             </div>
             <span className="text-sm text-gray-600">
-              {business.ratings.average.toFixed(1)} ({business.ratings.count} reviews)
+              {(business.ratings?.average || business.rating || 0).toFixed(1)} ({business.ratings?.count || business.reviewCount || 0} reviews)
             </span>
           </div>
         )}
 
         {/* Description */}
-        <p className="text-sm text-gray-700 mb-4 line-clamp-2">
-          {business.description}
-        </p>
+        {business.description && (
+          <p className="text-sm text-gray-700 mb-4 line-clamp-2">
+            {business.description}
+          </p>
+        )}
 
         {/* Services */}
-        {business.services.length > 0 && (
+        {business.services && business.services.length > 0 && (
           <div className="mb-4">
             <div className="flex flex-wrap gap-1">
               {business.services.slice(0, 3).map((service, index) => (
@@ -148,11 +149,11 @@ const BusinessCard: React.FC<BusinessCardProps> = ({ business, onClick }) => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
             <span className="truncate">
-              {business.location.suburb}, {business.location.state}
+              {business.location?.suburb || business.location || 'Location not specified'}{business.location?.state && `, ${business.location.state}`}
             </span>
           </div>
 
-          {business.contact.phone && (
+          {business.contact?.phone && (
             <div className="flex items-center">
               <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -163,9 +164,11 @@ const BusinessCard: React.FC<BusinessCardProps> = ({ business, onClick }) => {
         </div>
 
         {/* Business Hours */}
-        <div className="mt-2 text-xs text-gray-500">
-          {businessService.formatBusinessHours(business.businessHours)}
-        </div>
+        {business.businessHours && (
+          <div className="mt-2 text-xs text-gray-500">
+            {businessService.formatBusinessHours(business.businessHours)}
+          </div>
+        )}
       </div>
     </div>
   );

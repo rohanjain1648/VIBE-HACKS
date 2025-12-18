@@ -41,21 +41,7 @@ interface SensorData {
   };
 }
 
-interface IoTDevice {
-  id: string;
-  name: string;
-  type: 'sensor' | 'irrigation' | 'weather_station' | 'livestock_tracker' | 'equipment_monitor';
-  status: 'online' | 'offline' | 'maintenance';
-  location: string;
-  lastSeen: Date;
-  batteryLevel: number;
-  sensors: SensorData[];
-  actions?: {
-    name: string;
-    action: () => void;
-    icon: React.ReactNode;
-  }[];
-}
+// Removed unused IoTDevice interface
 
 interface LivestockData {
   id: string;
@@ -181,8 +167,8 @@ const MOCK_EQUIPMENT: EquipmentData[] = [
 
 export const IoTFarmMonitoring: React.FC = () => {
   const [sensors, setSensors] = useState<SensorData[]>(MOCK_SENSORS);
-  const [livestock, setLivestock] = useState<LivestockData[]>(MOCK_LIVESTOCK);
-  const [equipment, setEquipment] = useState<EquipmentData[]>(MOCK_EQUIPMENT);
+  const [livestock] = useState<LivestockData[]>(MOCK_LIVESTOCK);
+  const [equipment] = useState<EquipmentData[]>(MOCK_EQUIPMENT);
   const [activeTab, setActiveTab] = useState<'sensors' | 'livestock' | 'equipment' | 'alerts'>('sensors');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedSensor, setSelectedSensor] = useState<SensorData | null>(null);
@@ -250,26 +236,32 @@ export const IoTFarmMonitoring: React.FC = () => {
   };
 
   const getAlerts = () => {
-    const alerts = [];
-    
+    const alerts: Array<{
+      id: string;
+      type: 'warning' | 'critical' | 'info';
+      message: string;
+      timestamp: Date;
+      source: string;
+    }> = [];
+
     sensors.forEach(sensor => {
       if (sensor.batteryLevel < 20) {
         alerts.push({
           id: `battery-${sensor.id}`,
           type: 'warning',
-          title: 'Low Battery',
           message: `${sensor.name} battery at ${sensor.batteryLevel.toFixed(0)}%`,
-          timestamp: new Date()
+          timestamp: new Date(),
+          source: sensor.name
         });
       }
-      
+
       if (!isValueInOptimalRange(sensor)) {
         alerts.push({
           id: `range-${sensor.id}`,
-          type: 'alert',
-          title: 'Value Out of Range',
+          type: 'warning',
           message: `${sensor.name}: ${sensor.value.toFixed(1)}${sensor.unit} (optimal: ${sensor.thresholds.optimal.min}-${sensor.thresholds.optimal.max}${sensor.unit})`,
-          timestamp: new Date()
+          timestamp: new Date(),
+          source: sensor.name
         });
       }
     });
@@ -278,10 +270,10 @@ export const IoTFarmMonitoring: React.FC = () => {
       if (animal.health.status === 'attention' || animal.health.status === 'sick') {
         alerts.push({
           id: `health-${animal.id}`,
-          type: animal.health.status === 'sick' ? 'error' : 'warning',
-          title: 'Animal Health Alert',
+          type: animal.health.status === 'sick' ? 'critical' : 'warning',
           message: `${animal.type.toUpperCase()} ${animal.animalId} requires ${animal.health.status === 'sick' ? 'immediate' : ''} attention`,
-          timestamp: animal.lastUpdate
+          timestamp: animal.lastUpdate,
+          source: `Livestock Monitor`
         });
       }
     });
@@ -332,7 +324,7 @@ export const IoTFarmMonitoring: React.FC = () => {
                 <Activity className="w-6 h-6 text-green-600" />
               </div>
             </div>
-          </div>
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -364,8 +356,8 @@ export const IoTFarmMonitoring: React.FC = () => {
                   {equipment.filter(e => e.status === 'running' || e.status === 'idle').length}/{equipment.length}
                 </p>
               </div>
-              <div className="p-3 bg-purple-100 rounded-lg">
-                <Settings className="w-6 h-6 text-purple-600" />
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <Settings className="w-6 h-6 text-blue-600" />
               </div>
             </div>
           </motion.div>
@@ -399,11 +391,10 @@ export const IoTFarmMonitoring: React.FC = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${
-                activeTab === tab.id
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${activeTab === tab.id
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+                }`}
             >
               <tab.icon className="w-4 h-4" />
               <span>{tab.label}</span>
@@ -447,9 +438,8 @@ export const IoTFarmMonitoring: React.FC = () => {
                       </span>
                       <span className="text-lg text-gray-600">{sensor.unit}</span>
                     </div>
-                    <div className={`text-sm mt-1 ${
-                      isValueInOptimalRange(sensor) ? 'text-green-600' : 'text-red-600'
-                    }`}>
+                    <div className={`text-sm mt-1 ${isValueInOptimalRange(sensor) ? 'text-green-600' : 'text-red-600'
+                      }`}>
                       Optimal: {sensor.thresholds.optimal.min}-{sensor.thresholds.optimal.max}{sensor.unit}
                     </div>
                   </div>
@@ -605,21 +595,19 @@ export const IoTFarmMonitoring: React.FC = () => {
               {getAlerts().map(alert => (
                 <div
                   key={alert.id}
-                  className={`bg-white rounded-xl p-6 shadow-sm border-l-4 ${
-                    alert.type === 'error' ? 'border-red-500' : 
+                  className={`bg-white rounded-xl p-6 shadow-sm border-l-4 ${alert.type === 'critical' ? 'border-red-500' :
                     alert.type === 'warning' ? 'border-yellow-500' : 'border-blue-500'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className={`p-2 rounded-lg ${
-                        alert.type === 'error' ? 'bg-red-100 text-red-600' :
+                      <div className={`p-2 rounded-lg ${alert.type === 'critical' ? 'bg-red-100 text-red-600' :
                         alert.type === 'warning' ? 'bg-yellow-100 text-yellow-600' : 'bg-blue-100 text-blue-600'
-                      }`}>
+                        }`}>
                         <AlertTriangle className="w-5 h-5" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900">{alert.title}</h3>
+                        <h3 className="font-semibold text-gray-900">{alert.source}</h3>
                         <p className="text-gray-600">{alert.message}</p>
                       </div>
                     </div>
@@ -629,7 +617,7 @@ export const IoTFarmMonitoring: React.FC = () => {
                   </div>
                 </div>
               ))}
-              
+
               {getAlerts().length === 0 && (
                 <div className="text-center py-12">
                   <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
@@ -659,13 +647,13 @@ export const IoTFarmMonitoring: React.FC = () => {
                 ×
               </button>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <p className="text-sm text-gray-600">Current Value</p>
                 <p className="text-2xl font-bold">{selectedSensor.value.toFixed(2)} {selectedSensor.unit}</p>
               </div>
-              
+
               <div>
                 <p className="text-sm text-gray-600">Location</p>
                 <p className="font-medium">{selectedSensor.location.field}</p>
@@ -673,7 +661,7 @@ export const IoTFarmMonitoring: React.FC = () => {
                   {selectedSensor.location.coordinates.lat.toFixed(4)}, {selectedSensor.location.coordinates.lng.toFixed(4)}
                 </p>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-600">Battery</p>
@@ -684,7 +672,7 @@ export const IoTFarmMonitoring: React.FC = () => {
                   <p className="font-medium">{selectedSensor.signalStrength}%</p>
                 </div>
               </div>
-              
+
               <div>
                 <p className="text-sm text-gray-600">Last Update</p>
                 <p className="font-medium">{selectedSensor.lastUpdate.toLocaleString()}</p>
