@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test - Rural Connect AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #2c5f2d;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #2c5f2d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1e4620;
+        }
+        .result {
+            background: #f9f9f9;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #2c5f2d;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success {
+            border-left-color: #2c5f2d;
+        }
+        .error {
+            border-left-color: #d32f2f;
+            background: #ffebee;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status.ok {
+            background: #4caf50;
+            color: white;
+        }
+        .status.fail {
+            background: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌏 Rural Connect AI - API Test Page</h1>
+    <p>Test all backend endpoints to ensure they're working correctly.</p>
+
+    <div class="test-section">
+        <h2>Agriculture Dashboard <span id="agri-status" class="status"></span></h2>
+        <button onclick="testEndpoint('agriculture')">Test Agriculture API</button>
+        <div id="agri-result" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Wellbeing Dashboard <span id="wellbeing-status" class="status"></span></h2>
+        <button onclick="testEndpoint('wellbeing')">Test Wellbeing API</button>
+        <div id="wellbeing-result" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Business Directory <span id="business-status" class="status"></span></h2>
+        <button onclick="testEndpoint('business')">Test Business API</button>
+        <div id="business-result" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>All Endpoints</h2>
+        <button onclick="testAllEndpoints()">Test All Endpoints</button>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001/api';
+
+        async function testEndpoint(type) {
+            const endpoints = {
+                agriculture: '/agriculture/dashboard',
+                wellbeing: '/wellbeing/dashboard?days=30',
+                business: '/business/directory'
+            };
+
+            const resultDiv = document.getElementById(`${type}-result`);
+            const statusSpan = document.getElementById(`${type}-status`);
+            
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Loading...';
+            resultDiv.className = 'result';
+
+            try {
+                const response = await fetch(API_BASE + endpoints[type]);
+                const data = await response.json();
+
+                if (data.success) {
+                    resultDiv.textContent = JSON.stringify(data, null, 2);
+                    resultDiv.className = 'result success';
+                    statusSpan.textContent = 'OK';
+                    statusSpan.className = 'status ok';
+                } else {
+                    throw new Error('API returned success: false');
+                }
+            } catch (error) {
+                resultDiv.textContent = `Error: ${error.message}`;
+                resultDiv.className = 'result error';
+                statusSpan.textContent = 'FAIL';
+                statusSpan.className = 'status fail';
+            }
+        }
+
+        async function testAllEndpoints() {
+            await testEndpoint('agriculture');
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await testEndpoint('wellbeing');
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await testEndpoint('business');
+        }
+
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            console.log('🧪 Auto-testing all endpoints...');
+            testAllEndpoints();
+        });
+    </script>
+</body>
+</html>
